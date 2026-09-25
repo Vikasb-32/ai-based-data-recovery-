@@ -29,10 +29,12 @@ wheels/
 
 # Database & Runtime
 recovery.db
+backend/recovery.db
 *.sqlite
 *.sqlite3
 datasets/uploads/*
 !datasets/uploads/.gitkeep
+backend/datasets/
 
 # Environment & IDE
 .env

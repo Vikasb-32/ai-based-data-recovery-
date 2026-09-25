@@ -35,3 +35,7 @@ export const getJobFragments = async (jobId) => {
   if (!response.ok) throw new Error('Get fragments failed');
   return response.json();
 };
+
+export const getFileDownloadUrl = (fileId) => `${API_URL}/files/${fileId}/download`;
+export const getFilePreviewUrl = (fileId) => `${API_URL}/files/${fileId}/preview`;
+

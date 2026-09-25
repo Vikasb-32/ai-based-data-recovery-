@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getJobFiles } from '../services/api';
-import { ArrowLeft, File as FileIcon, CheckCircle, Search, ShieldCheck } from 'lucide-react';
+import { getJobFiles, getFileDownloadUrl, getFilePreviewUrl } from '../services/api';
+import { ArrowLeft, File as FileIcon, CheckCircle, Search, ShieldCheck, Download } from 'lucide-react';
 
 const FileDetail = () => {
   const { jobId, fileId } = useParams();
@@ -47,9 +47,20 @@ const FileDetail = () => {
               <p className="text-gray-500">{file.file_type} Document</p>
             </div>
           </div>
-          <span className={`px-4 py-2 rounded-full font-bold text-sm ${file.status === 'LIKELY_VIEWABLE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-            {file.status.replace(/_/g, ' ')}
-          </span>
+          <div className="flex items-center space-x-3">
+            {file.output_path && (
+              <a 
+                href={getFileDownloadUrl(file.id)} 
+                download={file.filename}
+                className="flex items-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow-sm transition-colors text-sm"
+              >
+                <Download size={16} className="mr-1.5" /> Download File
+              </a>
+            )}
+            <span className={`px-4 py-2 rounded-full font-bold text-sm ${file.status === 'RECOVERED' || file.status === 'LIKELY_VIEWABLE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+              {file.status.replace(/_/g, ' ')}
+            </span>
+          </div>
         </div>
         
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -122,6 +133,22 @@ const FileDetail = () => {
             </div>
           </div>
         </div>
+
+        {file.output_path && (file.file_type.toUpperCase() === 'JPEG' || file.file_type.toUpperCase() === 'JPG' || file.file_type.toUpperCase() === 'PNG') && (
+          <div className="border-t border-gray-200 p-6 bg-gray-50">
+            <h3 className="font-bold text-gray-800 mb-3 flex items-center">
+              <CheckCircle className="mr-2 text-green-600" size={18} /> Recovered Image Visual Verification
+            </h3>
+            <div className="bg-white p-3 rounded-lg border border-gray-200 inline-block shadow-sm">
+              <img 
+                src={getFilePreviewUrl(file.id)} 
+                alt={file.filename} 
+                className="max-h-96 rounded object-contain mx-auto"
+              />
+              <p className="text-xs text-gray-500 mt-2 text-center">Live preview rendered from recovered bitstream</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

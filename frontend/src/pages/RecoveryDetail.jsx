@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getJobStatus, getJobFiles, getJobFragments } from '../services/api';
+import { getJobStatus, getJobFiles, getJobFragments, getFileDownloadUrl } from '../services/api';
 import { CheckCircle, AlertCircle, Clock, ShieldCheck, Download, RefreshCw, BarChart2, FileText, Settings, Cpu, Link as LinkIcon, Database } from 'lucide-react';
 
 const RecoveryDetail = () => {
@@ -162,8 +162,18 @@ const RecoveryDetail = () => {
                       {file.priority}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 flex items-center justify-between">
                     <span className="text-sm text-gray-700">{file.status.replace(/_/g, ' ')}</span>
+                    {file.output_path && (
+                      <a 
+                        href={getFileDownloadUrl(file.id)} 
+                        download={file.filename}
+                        className="ml-3 inline-flex items-center text-xs text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded border border-blue-200"
+                        title="Download recovered file"
+                      >
+                        <Download size={12} className="mr-1" /> Save
+                      </a>
+                    )}
                   </td>
                 </tr>
               ))}

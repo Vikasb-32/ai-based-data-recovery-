@@ -72,3 +72,20 @@ def get_fragments(job_id: str, db: Session = Depends(get_db)):
 def get_files(job_id: str, db: Session = Depends(get_db)):
     files = db.query(RecoveredFile).filter(RecoveredFile.recovery_job_id == job_id).all()
     return files
+
+@router.get("/files/{file_id}/download")
+def download_file(file_id: str, db: Session = Depends(get_db)):
+    from fastapi.responses import FileResponse
+    f = db.query(RecoveredFile).filter(RecoveredFile.id == file_id).first()
+    if not f or not f.output_path or not os.path.exists(f.output_path):
+        raise HTTPException(status_code=404, detail="Recovered file not found")
+    return FileResponse(f.output_path, filename=f.filename)
+
+@router.get("/files/{file_id}/preview")
+def preview_file(file_id: str, db: Session = Depends(get_db)):
+    from fastapi.responses import FileResponse
+    f = db.query(RecoveredFile).filter(RecoveredFile.id == file_id).first()
+    if not f or not f.output_path or not os.path.exists(f.output_path):
+        raise HTTPException(status_code=404, detail="Recovered file not found")
+    media_type = "image/jpeg" if f.file_type.upper() in ["JPEG", "JPG"] else "application/octet-stream"
+    return FileResponse(f.output_path, media_type=media_type)
